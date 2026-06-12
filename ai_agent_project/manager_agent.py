@@ -1,19 +1,37 @@
 from agent_doc import summarize_and_extract
-from agent_query import answer_query
 from agent_search import search_internet
+from coding_agent import coding_agent
 
 
 def smart_manager(question, document=None):
 
     q = question.lower()
 
-    # summarize document
-    if document and ("summarize" in q or "summary" in q):
+    coding_keywords = [
+        "python",
+        "java",
+        "c++",
+        "code",
+        "program",
+        "leetcode",
+        "algorithm",
+        "debug",
+        "sql",
+        "binary search",
+        "linked list",
+        "tree",
+        "stack",
+        "queue"
+    ]
+
+    if document and (
+        "summarize" in q
+        or "summary" in q
+        or "keywords" in q
+    ):
         return summarize_and_extract(document)
 
-    # question from document
-    if document:
-        return answer_query(document, question)
+    if any(word in q for word in coding_keywords):
+        return coding_agent(question)
 
-    # internet search
     return search_internet(question)

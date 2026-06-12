@@ -1,63 +1,35 @@
-import wikipedia
-import re
-from transformers import pipeline
+from groq import Groq
+from dotenv import load_dotenv
+import os
 
-# small summarization model
-generator = pipeline("text-generation", model="gpt2")
+load_dotenv()
 
-
-def clean_query(query):
-    query = query.lower()
-
-    remove_words = [
-        "what is",
-        "define",
-        "explain",
-        "tell me about",
-        "give me",
-        "information about"
-    ]
-
-    for word in remove_words:
-        query = query.replace(word, "")
-
-    return query.strip()
-
+client = Groq(
+    api_key=os.getenv("GROQ_API_KEY")
+)
 
 def search_internet(query):
 
-    try:
+    response = client.chat.completions.create(
+        model="llama-3.3-70b-versatile",
+        messages=[
+            {
+                "role": "system",
+                "content": """
+                You are a helpful AI assistant.
 
-        cleaned = clean_query(query)
+                Give accurate and concise answers.
+                """
+            },
+            {
+                "role": "user",
+                "content": query
+            }
+        ],
+        temperature=0.3,
+        max_tokens=800
+    )
 
-        results = wikipedia.search(cleaned)
-
-        if not results:
-            return {"answer": "Sorry, I couldn't find information for this query."}
-
-        try:
-            page = wikipedia.page(results[0], auto_suggest=False)
-        except wikipedia.DisambiguationError as e:
-            page = wikipedia.page(e.options[0])
-
-        text = page.summary[:1200]
-
-        prompt = f"""
-Explain this topic in simple words.
-
-Topic: {query}
-
-Information:
-{text}
-
-Answer:
-"""
-
-        result = generator(prompt, max_new_tokens=80)[0]["generated_text"]
-
-        answer = result.replace(prompt, "").strip()
-
-        return {"answer": answer}
-
-    except Exception:
-        return {"answer": "Sorry, I couldn't find information for this query."}
+    return {
+        "answer": response.choices[0].message.content
+    }

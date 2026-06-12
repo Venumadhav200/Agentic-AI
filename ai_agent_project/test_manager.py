@@ -1,4 +1,4 @@
-from manager_agent import manager_agent
+from ai_agent_project.manager_agent import manager_agent
 
 
 document = """

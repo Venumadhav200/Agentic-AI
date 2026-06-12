@@ -10,7 +10,7 @@ if "messages" not in st.session_state:
 
 document = st.text_area("Paste document (optional)")
 
-# show chat history
+# Show chat history
 for msg in st.session_state.messages:
     with st.chat_message(msg["role"]):
         st.write(msg["content"])
@@ -26,33 +26,46 @@ if user_input:
     with st.chat_message("user"):
         st.write(user_input)
 
-    response = requests.post(
-        "http://127.0.0.1:8000/agent",
-        json={
-            "question": user_input,
-            "document": document
-        }
-    )
-
-    if response.status_code == 200:
-
-        result = response.json()["result"]
-
-        if "answer" in result:
-            answer = result["answer"]
-
-        elif "document" in result:
-            answer = f"Summary:\n{result['document']}\n\nKeywords:\n{', '.join(result['keywords'])}"
-
-        else:
-            answer = "No response generated."
-
-        st.session_state.messages.append(
-            {"role": "assistant", "content": answer}
+    try:
+        response = requests.post(
+            "http://127.0.0.1:8000/agent",
+            json={
+                "question": user_input,
+                "document": document
+            }
         )
 
-        with st.chat_message("assistant"):
-            st.write(answer)
+        if response.status_code == 200:
 
-    else:
-        st.error("Server error")
+            result = response.json()["result"]
+
+            if "answer" in result:
+                answer = result["answer"]
+
+            elif "summary" in result:
+                answer = (
+                    f"Summary:\n{result['summary']}\n\n"
+                    f"Keywords:\n{', '.join(result['keywords'])}"
+                )
+
+            elif "document" in result:
+                answer = (
+                    f"Summary:\n{result['document']}\n\n"
+                    f"Keywords:\n{', '.join(result['keywords'])}"
+                )
+
+            else:
+                answer = "No response generated."
+
+            st.session_state.messages.append(
+                {"role": "assistant", "content": answer}
+            )
+
+            with st.chat_message("assistant"):
+                st.write(answer)
+
+        else:
+            st.error(f"Server Error: {response.status_code}")
+
+    except Exception as e:
+        st.error(f"Error: {str(e)}")
