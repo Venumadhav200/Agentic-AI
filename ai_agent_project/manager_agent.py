@@ -1,6 +1,6 @@
-from ai_agent_project.agent_doc import summarize_and_extract
-from ai_agent_project.agent_search import search_internet
-from ai_agent_project.coding_agent import coding_agent
+from agent_doc import summarize_and_extract
+from agent_search import search_internet
+from coding_agent import coding_agent
 
 
 def smart_manager(question, document=None):
