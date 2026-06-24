@@ -28,7 +28,7 @@ if user_input:
 
     try:
         response = requests.post(
-            "http://127.0.0.1:8000/agent",
+            "https://agentic-ai-backend-4kg7.onrender.com/agent",
             json={
                 "question": user_input,
                 "document": document
