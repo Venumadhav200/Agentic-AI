@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from pydantic import BaseModel
-from manager_agent import smart_manager
+from backend.manager_agent import smart_manager
 
 app = FastAPI()
 

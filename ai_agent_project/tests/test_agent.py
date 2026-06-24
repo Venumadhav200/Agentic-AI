@@ -1,4 +1,4 @@
-from agent_doc import summarize_and_extract
+from ai_agent_project.backend.agent_doc import summarize_and_extract
 
 sample_text = """
 Artificial Intelligence is transforming industries.

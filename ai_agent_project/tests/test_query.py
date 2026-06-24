@@ -1,4 +1,4 @@
-from agent_query import answer_query
+from ai_agent_project.archive.agent_query import answer_query
 
 document = """
 Artificial Intelligence is transforming industries.
